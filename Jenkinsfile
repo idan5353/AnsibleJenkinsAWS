@@ -56,16 +56,28 @@ pipeline {
         }
         
         stage('Configure with Ansible') {
-            steps {
-                dir('ansible') {
-                    sh '''
-                        export ANSIBLE_ROLES_PATH=$(pwd)/roles
-                        ansible-playbook -i inventory.ini playbooks/site.yml
-                    '''
-                }
-            }
+    steps {
+        dir('ansible') {
+            sh '''
+                # Check if inventory exists
+                if [ ! -f inventory.ini ]; then
+                    echo "Inventory file not found! Checking terraform output..."
+                    ls -la ../terraform/
+                    cat ../terraform/inventory.ini || echo "No inventory in terraform dir"
+                    exit 1
+                fi
+                
+                echo "Inventory contents:"
+                cat inventory.ini
+                
+                # Run ansible
+                export ANSIBLE_ROLES_PATH=$(pwd)/roles
+                export ANSIBLE_HOST_KEY_CHECKING=False
+                ansible-playbook -i inventory.ini playbooks/site.yml -vv
+            '''
         }
     }
+}
     
     post {
         success {
