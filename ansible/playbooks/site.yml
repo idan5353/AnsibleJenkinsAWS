@@ -1,0 +1,33 @@
+---
+- name: Configure Web Servers
+  hosts: web
+  become: yes
+  
+  roles:
+    - common
+    - nginx
+    - docker
+
+  tasks:
+    - name: Ensure web directory exists
+      file:
+        path: /var/www/html
+        state: directory
+        mode: '0755'
+
+    - name: Deploy sample web page
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Welcome</title>
+          </head>
+          <body>
+              <h1>Terraform + Ansible Deployment Successful!</h1>
+              <p>Server: {{ ansible_hostname }}</p>
+              <p>IP Address: {{ ansible_default_ipv4.address }}</p>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        mode: '0644'

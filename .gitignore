@@ -1,0 +1,63 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Ansible
+*.retry
+ansible.log
+.vault_pass
+*.pyc
+__pycache__/
+inventory.ini
+
+# SSH Keys
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+*.ppk
+
+# AWS
+.aws/
+credentials
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jenkins
+.jenkins/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# Python
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# General
+.cache/
+tmp/
+temp/
