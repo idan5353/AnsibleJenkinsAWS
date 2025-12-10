@@ -1,9 +1,8 @@
 [web]
-%{~ for ip in web_servers ~}
-${ip} ansible_user=ubuntu ansible_ssh_private_key_file="${private_key_path}"
-%{~ endfor ~}
+%{ for ip in web_servers ~}
+${ip} ansible_user=ubuntu ansible_ssh_private_key_file=${private_key_path}
+%{ endfor ~}
 
 [web:vars]
 ansible_python_interpreter=/usr/bin/python3
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-
