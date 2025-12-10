@@ -4,6 +4,8 @@ pipeline {
     environment {
         AWS_CREDENTIALS = credentials('aws-credentials')
         SSH_KEY = credentials('aws-ssh-key')
+        TF_PLUGIN_CACHE_DIR = "/var/lib/jenkins/.terraform.d/plugin-cache"
+        HOME = "/var/lib/jenkins"
     }
     
     stages {
@@ -17,7 +19,8 @@ pipeline {
             steps {
                 dir('terraform') {
                     sh '''
-                        terraform init
+                        rm -rf .terraform
+                        terraform init -reconfigure
                         terraform validate
                     '''
                 }
