@@ -55,24 +55,64 @@ pipeline {
             }
         }
         
+        stage('Debug Inventory') {
+            steps {
+                sh '''
+                    echo "======================================"
+                    echo "Checking Terraform Outputs"
+                    echo "======================================"
+                    cd terraform
+                    terraform output
+                    terraform output -json
+                    
+                    echo ""
+                    echo "======================================"
+                    echo "Checking Inventory File Location"
+                    echo "======================================"
+                    ls -la ../ansible/ || echo "Ansible directory not found"
+                    
+                    echo ""
+                    echo "======================================"
+                    echo "Inventory File Contents"
+                    echo "======================================"
+                    cat ../ansible/inventory.ini || echo "Inventory file not found"
+                    
+                    echo ""
+                    echo "======================================"
+                    echo "Checking for inventory in terraform dir"
+                    echo "======================================"
+                    cat inventory.ini || echo "No inventory in terraform dir"
+                '''
+            }
+        }
+        
         stage('Configure with Ansible') {
             steps {
                 dir('ansible') {
                     sh '''
                         # Check if inventory exists
                         if [ ! -f inventory.ini ]; then
-                            echo "Inventory file not found! Checking terraform output..."
-                            ls -la ../terraform/
-                            cat ../terraform/inventory.ini || echo "No inventory in terraform dir"
+                            echo "ERROR: Inventory file not found!"
                             exit 1
                         fi
                         
-                        echo "Inventory contents:"
+                        echo "======================================"
+                        echo "Final Inventory Check"
+                        echo "======================================"
                         cat inventory.ini
                         
-                        # Run ansible
+                        echo ""
+                        echo "======================================"
+                        echo "Testing Ansible Connectivity"
+                        echo "======================================"
                         export ANSIBLE_ROLES_PATH=$(pwd)/roles
                         export ANSIBLE_HOST_KEY_CHECKING=False
+                        ansible web -m ping -i inventory.ini || echo "Ping failed, continuing anyway..."
+                        
+                        echo ""
+                        echo "======================================"
+                        echo "Running Ansible Playbook"
+                        echo "======================================"
                         ansible-playbook -i inventory.ini playbooks/site.yml -vv
                     '''
                 }
@@ -83,6 +123,19 @@ pipeline {
     post {
         success {
             echo 'Infrastructure deployed and configured successfully!'
+            sh '''
+                echo "======================================"
+                echo "Deployment Summary"
+                echo "======================================"
+                cd terraform
+                echo "Web Server IPs:"
+                terraform output web_server_ips
+                echo ""
+                echo "Access your servers at:"
+                terraform output -json web_server_ips | grep -oE '([0-9]{1,3}\\.){3}[0-9]{1,3}' | while read ip; do
+                    echo "http://$ip"
+                done
+            '''
         }
         failure {
             echo 'Pipeline failed!'
