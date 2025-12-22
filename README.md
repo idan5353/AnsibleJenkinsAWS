@@ -2,6 +2,7 @@
 # AWS Infrastructure Automation with Terraform, Ansible & Jenkins
 
 This project provisions an AWS environment using **Terraform**, configures servers with **Ansible**, and automates the entire workflow using a **Jenkins CI/CD pipeline**.
+<img width="2848" height="1600" alt="049f0bc0-a20e-4e14-b3d7-f7743d5317b3" src="https://github.com/user-attachments/assets/ff494458-1570-4f51-a458-72c06b97f224" />
 
 ![ansible1](https://github.com/user-attachments/assets/5b62e2c8-06ab-451f-b496-140ccbd77776)
 ![ansible3](https://github.com/user-attachments/assets/e504e97f-3b6c-4a89-8461-9130ebdb386c)
